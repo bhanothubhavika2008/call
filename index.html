@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice impersonation detector</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-icon"><i class="ti ti-shield-lock"></i></div>
+      <div>
+        <h1>Voice impersonation detector</h1>
+        <p class="subtitle">AI-powered detection — real-time alerts with automatic call protection</p>
+      </div>
+      <div class="status-pill" id="status-pill">Idle</div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('upload')" id="tab-upload">
+        <i class="ti ti-upload"></i> Upload audio
+      </button>
+      <button class="tab" onclick="switchTab('live')" id="tab-live">
+        <i class="ti ti-microphone"></i> Live detection
+      </button>
+    </div>
+
+    <!-- Upload Panel -->
+    <div id="panel-upload" class="panel active">
+      <div class="upload-zone" id="dropzone"
+        onclick="document.getElementById('file-input').click()"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="handleDrop(event)">
+        <i class="ti ti-file-music upload-icon"></i>
+        <p class="upload-title">Drop your audio file here or click to browse</p>
+        <p class="upload-hint">Supports .wav, .mp3, .ogg, .m4a — max 50 MB</p>
+        <div class="file-name" id="file-label"></div>
+      </div>
+      <input type="file" id="file-input" accept="audio/*" style="display:none" onchange="handleFile(this)">
+
+      <canvas id="upload-wave" class="waveform" width="800" height="80" style="display:none"></canvas>
+
+      <div class="actions">
+        <button class="btn primary" id="analyse-btn" disabled onclick="runAnalysis()">
+          <i class="ti ti-scan"></i> Analyse audio
+        </button>
+        <button class="btn" onclick="resetUpload()">
+          <i class="ti ti-refresh"></i> Reset
+        </button>
+      </div>
+
+      <div id="upload-result"></div>
+    </div>
+
+    <!-- Live Panel -->
+    <div id="panel-live" class="panel">
+      <div class="live-header">
+        <p class="panel-desc">Monitors your call in 2-second chunks. Alerts fire automatically based on risk level.</p>
+        <div class="live-badge" id="live-badge" style="display:none">
+          <span class="dot"></span> Live
+        </div>
+      </div>
+
+      <canvas id="live-wave" width="800" height="80" class="live-canvas"></canvas>
+
+      <div class="live-controls">
+        <button class="btn primary" id="start-btn" onclick="startLive()">
+          <i class="ti ti-player-play"></i> Start monitoring
+        </button>
+        <button class="btn stop-btn" id="stop-btn" disabled onclick="stopLive()">
+          <i class="ti ti-player-stop"></i> Stop
+        </button>
+      </div>
+
+      <div class="stat-row" id="live-stats" style="display:none">
+        <div class="stat">
+          <div class="stat-val" id="stat-chunks">0</div>
+          <div class="stat-lbl">Chunks analysed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-alerts">0</div>
+          <div class="stat-lbl">Alerts raised</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-avg">—</div>
+          <div class="stat-lbl">Avg AI probability</div>
+        </div>
+      </div>
+
+      <div id="live-notification"></div>
+      <div id="call-ended-screen"></div>
+      <div class="live-chunks" id="live-chunks"></div>
+    </div>
+
+    <footer class="app-footer">
+      <i class="ti ti-info-circle"></i>
+      Results are probabilistic risk signals, not definitive proof. Always verify through a secondary trusted channel.
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
